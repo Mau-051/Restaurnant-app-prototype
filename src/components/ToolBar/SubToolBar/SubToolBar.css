@@ -1,0 +1,47 @@
+.sub-toolbar {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: hsl(133, 63%, 43%);
+  position: fixed;
+  top: 13vw;
+  left: 2vw;
+  border-radius: 1em;
+  display: flex;
+  flex-direction: column;
+}
+
+.sub-toolbar-li {
+  border-bottom: 1px solid #bbb;
+}
+
+.sub-toolbar-li:last-child {
+  border-bottom: none;
+}
+
+.sub-toolbar-li button {
+  background-color: rgba(255, 255, 255, 0);
+  border: none;
+  color: #112a46;
+  padding: 3vw 2vw;
+  font-size: 3vw;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.sub-toolbar-li:hover {
+  background-color: hsl(133, 77%, 36%);
+}
+
+@media only screen and (min-width: 768px) {
+  .sub-toolbar {
+    top: 5vw;
+    left: 2vw;
+  }
+  .sub-toolbar-li button {
+    padding: 1.5vw 1vw;
+    font-size: 1vw;
+  }
+}
