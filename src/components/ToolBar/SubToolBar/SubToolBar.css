@@ -7,7 +7,7 @@
   position: fixed;
   top: 13vw;
   left: 2vw;
-  border-radius: 1em;
+  border-radius: 4.5vw;
   display: flex;
   flex-direction: column;
 }
@@ -37,8 +37,9 @@
 
 @media only screen and (min-width: 768px) {
   .sub-toolbar {
-    top: 5vw;
-    left: 2vw;
+    top: 4.5vw;
+    left: 1.5vw;
+    border-radius: 1.3vw;
   }
   .sub-toolbar-li button {
     padding: 1.5vw 1vw;

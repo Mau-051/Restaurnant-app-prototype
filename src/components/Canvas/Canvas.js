@@ -3,8 +3,19 @@ import { useCanvas } from "./CanvasCtx";
 import "./Canvas.css";
 
 export function Canvas() {
-  const { canvasRef, prepareCanvas, startDrawing, finishDrawing, draw } =
-    useCanvas();
+  useGesture();
+
+  const {
+    canvasRef,
+    prepareCanvas,
+    startDrawing,
+    finishDrawing,
+    draw,
+    handleStart,
+    handleMove,
+    handleCancel,
+    handleEnd,
+  } = useCanvas();
 
   useEffect(() => {
     prepareCanvas();
@@ -12,12 +23,15 @@ export function Canvas() {
 
   return (
     <canvas
+      //mouse drawing control
       onMouseDown={startDrawing}
       onMouseUp={finishDrawing}
       onMouseMove={draw}
-      //onTouchStart={() => startDrawing()}
-      //onTouchMove={() => draw()}
-      //onTouchEnd={() => finishDrawing()}
+      //thouch drawing control
+      onTouchStart={handleStart}
+      onTouchMove={handleMove}
+      onTouchCancel={handleCancel}
+      onTouchEnd={handleEnd}
       ref={canvasRef}
     />
   );

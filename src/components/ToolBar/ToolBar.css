@@ -7,7 +7,7 @@
   position: fixed;
   top: 0;
   width: 100%;
-  border-radius: 0 0 0.8em 0.8em;
+  border-radius: 0 0 4vw 4vw;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -40,6 +40,9 @@
 }
 
 @media only screen and (min-width: 768px) {
+  .top-toolbar {
+    border-radius: 0 0 1.3vw 1.3vw;
+  }
   .top-toolbar-li button {
     padding: 1vw 1.5vw;
     font-size: 1vw;
