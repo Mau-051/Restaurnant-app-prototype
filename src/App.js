@@ -13,4 +13,8 @@ function App() {
   );
 }
 
+// toolbar on position default
+//subToolBar position absolute
+//canvas on position fixed
+
 export default App;

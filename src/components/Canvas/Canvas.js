@@ -3,14 +3,12 @@ import { useCanvas } from "./CanvasCtx";
 import "./Canvas.css";
 
 export function Canvas() {
-  useGesture();
-
   const {
     canvasRef,
     prepareCanvas,
     startDrawing,
-    finishDrawing,
     draw,
+    finishDrawing,
     handleStart,
     handleMove,
     handleCancel,
@@ -23,6 +21,7 @@ export function Canvas() {
 
   return (
     <canvas
+      ref={canvasRef}
       //mouse drawing control
       onMouseDown={startDrawing}
       onMouseUp={finishDrawing}
@@ -32,7 +31,6 @@ export function Canvas() {
       onTouchMove={handleMove}
       onTouchCancel={handleCancel}
       onTouchEnd={handleEnd}
-      ref={canvasRef}
     />
   );
 }

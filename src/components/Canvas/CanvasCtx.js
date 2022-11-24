@@ -4,21 +4,23 @@ const CanvasContext = React.createContext();
 
 export const CanvasProvider = ({ children }) => {
   const [isDrawing, setIsDrawing] = useState(false);
+  const [moveToggle, setMoveToggle] = useState(false);
   const canvasRef = useRef(null);
   const contextRef = useRef(null);
 
   const prepareCanvas = () => {
     const canvas = canvasRef.current;
-    let canvasSize = 3;
-    canvas.width = window.innerWidth * canvasSize;
-    canvas.height = window.innerHeight * canvasSize;
-    canvas.style.width = `${window.innerWidth * canvasSize}px`;
-    canvas.style.height = `${window.innerHeight * canvasSize}px`;
+    let canvasheight = 3;
+    let cavasWidth = 4;
+    canvas.width = window.innerWidth * cavasWidth;
+    canvas.height = window.innerHeight * canvasheight;
+    canvas.style.width = `${window.innerWidth * cavasWidth}px`;
+    canvas.style.height = `${window.innerHeight * canvasheight}px`;
 
     const context = canvas.getContext("2d");
     context.scale(1, 1);
     context.lineCap = "round";
-    context.strokeStyle = "black";
+    context.strokeStyle = strokeColor(context);
     context.lineWidth = 3;
     contextRef.current = context;
   };
@@ -106,16 +108,41 @@ export const CanvasProvider = ({ children }) => {
   };
 
   //mouse drawing control
+  let pos = { top: 0, left: 0, x: 0, y: 0 };
 
-  const startDrawing = ({ nativeEvent }) => {
-    const { offsetX, offsetY } = nativeEvent;
-    contextRef.current.beginPath();
-    contextRef.current.moveTo(offsetX, offsetY);
-    setIsDrawing(true);
+  const startDrawing = (nativeEvent) => {
+    if (!moveToggle) {
+      const { offsetX, offsetY } = nativeEvent;
+      contextRef.current.beginPath();
+      contextRef.current.moveTo(offsetX, offsetY);
+      setIsDrawing(true);
+    } else {
+      const canvas = canvasRef.current;
+
+      canvas.style.cursor = "grabbing";
+      canvas.style.userSelect = "none";
+
+      pos = {
+        // The current scroll
+        left: canvas.scrollLeft,
+        top: canvas.scrollTop,
+        // Get the current mouse position
+        x: nativeEvent.clientX,
+        y: nativeEvent.clientY,
+      };
+    }
   };
 
   const draw = ({ nativeEvent }) => {
     if (!isDrawing) {
+      const canvas = canvasRef.current;
+      // How far the mouse has been moved
+      const dx = nativeEvent.clientX - pos.x;
+      const dy = nativeEvent.clientY - pos.y;
+
+      // Scroll the element
+      canvas.scrollTop = pos.top - dy;
+      canvas.scrollLeft = pos.left - dx;
       return;
     }
     const { offsetX, offsetY } = nativeEvent;
@@ -124,26 +151,26 @@ export const CanvasProvider = ({ children }) => {
   };
 
   const finishDrawing = () => {
-    contextRef.current.closePath();
-    setIsDrawing(false);
+    if (moveToggle) {
+      const canvas = canvasRef.current;
+      canvas.style.cursor = "grab";
+      canvas.style.removeProperty("user-select");
+    } else {
+      contextRef.current.closePath();
+      setIsDrawing(false);
+    }
   };
 
   //touch drawing control
   const ongoingTouches = [];
 
   const handleStart = (evt) => {
-    const canvas = canvasRef.current;
-    const context = canvas.getContext("2d");
-    const touches = evt.changedTouches;
+    if (!moveToggle) {
+      const touches = evt.changedTouches;
 
-    for (let i = 0; i < touches.length; i++) {
-      ongoingTouches.push(copyTouch(touches[i]));
-      const color = colorForTouch(touches[i]);
-
-      context.beginPath();
-      context.arc(touches[i].pageX, touches[i].pageY, 4, 0, 2 * Math.PI, false);
-      context.fillStyle = color;
-      context.fill();
+      for (let i = 0; i < touches.length; i++) {
+        ongoingTouches.push(copyTouch(touches[i]));
+      }
     }
   };
 
@@ -152,22 +179,23 @@ export const CanvasProvider = ({ children }) => {
     const context = canvas.getContext("2d");
     const touches = evt.changedTouches;
 
-    for (let i = 0; i < touches.length; i++) {
-      const color = colorForTouch(touches[i]);
-      const idx = ongoingTouchIndexById(touches[i].identifier);
+    if (touches.length <= 1) {
+      for (let i = 0; i < touches.length; i++) {
+        const color = strokeColor(touches[i]);
+        const idx = ongoingTouchIndexById(touches[i].identifier);
 
-      if (idx >= 0) {
-        context.beginPath();
+        if (idx >= 0) {
+          context.beginPath();
 
-        context.moveTo(ongoingTouches[idx].pageX, ongoingTouches[idx].pageY);
+          context.moveTo(ongoingTouches[idx].pageX, ongoingTouches[idx].pageY);
 
-        context.lineTo(touches[i].pageX, touches[i].pageY);
-        context.lineWidth = 4;
-        context.strokeStyle = color;
-        context.stroke();
+          context.lineTo(touches[i].pageX, touches[i].pageY);
+          context.lineWidth = 4;
+          context.strokeStyle = color;
+          context.stroke();
 
-        ongoingTouches.splice(idx, 1, copyTouch(touches[i]));
-      } else {
+          ongoingTouches.splice(idx, 1, copyTouch(touches[i]));
+        }
       }
     }
   };
@@ -178,19 +206,13 @@ export const CanvasProvider = ({ children }) => {
     const touches = evt.changedTouches;
 
     for (let i = 0; i < touches.length; i++) {
-      const color = colorForTouch(touches[i]);
+      const color = strokeColor(touches[i]);
       let idx = ongoingTouchIndexById(touches[i].identifier);
 
       if (idx >= 0) {
         context.lineWidth = 4;
         context.fillStyle = color;
-        context.beginPath();
-        context.moveTo(ongoingTouches[idx].pageX, ongoingTouches[idx].pageY);
-        context.lineTo(touches[i].pageX, touches[i].pageY);
-        context.fillRect(touches[i].pageX - 4, touches[i].pageY - 4, 8, 8);
         ongoingTouches.splice(idx, 1);
-      } else {
-        console.log("can't figure out which touch to end");
       }
     }
   };
@@ -204,10 +226,10 @@ export const CanvasProvider = ({ children }) => {
     }
   };
 
-  const colorForTouch = (touch) => {
-    let r = touch.identifier % 16;
-    let g = Math.floor(touch.identifier / 3) % 16;
-    let b = Math.floor(touch.identifier / 7) % 16;
+  const strokeColor = (stroke) => {
+    let r = stroke.identifier % 16;
+    let g = Math.floor(stroke.identifier / 3) % 16;
+    let b = Math.floor(stroke.identifier / 7) % 16;
     r = r.toString(16);
     g = g.toString(16);
     b = b.toString(16);
@@ -237,6 +259,14 @@ export const CanvasProvider = ({ children }) => {
     context.fillRect(0, 0, canvas.width, canvas.height);
   };
 
+  const disableDraw = (toggle) => {
+    if (toggle) {
+      setMoveToggle(true);
+    } else {
+      setMoveToggle(false);
+    }
+  };
+
   return (
     <CanvasContext.Provider
       value={{
@@ -251,6 +281,7 @@ export const CanvasProvider = ({ children }) => {
         handleCancel,
         handleEnd,
         clearCanvas,
+        disableDraw,
         draw,
       }}
     >

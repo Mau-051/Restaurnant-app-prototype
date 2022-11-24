@@ -34,6 +34,67 @@
 .sub-toolbar-li:hover {
   background-color: hsl(133, 77%, 36%);
 }
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  height: 15vw;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgb(211, 43, 43);
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 6.5vw;
+  width: 6.5vw;
+  left: 1.5vw;
+  bottom: 7vw;
+  background-color: rgba(255, 255, 255, 0.901);
+  -webkit-transition: 0.5s;
+  transition: 0.5s;
+}
+
+input:checked + .slider {
+  background-color: #2196f3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196f3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(18vw);
+  -ms-transform: translateX(18vw);
+  transform: translateX(18vw);
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+#toggle-text {
+  position: absolute;
+  margin: 3vw 2vw;
+  font-size: 4vw;
+  color: rgba(255, 255, 255, 0.825);
+}
 
 @media only screen and (min-width: 768px) {
   .sub-toolbar {
@@ -44,5 +105,73 @@
   .sub-toolbar-li button {
     padding: 1.5vw 1vw;
     font-size: 1vw;
+  }
+
+  input:checked + .slider:before {
+    -webkit-transform: translateX(7.2v);
+    -ms-transform: translateX(7.2v);
+    transform: translateX(2vw);
+  }
+
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: 5vw;
+  }
+
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgb(211, 43, 43);
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 2vw;
+    width: 2vw;
+    left: 0.5vw;
+    bottom: 2.5vw;
+    background-color: rgba(255, 255, 255, 0.901);
+    -webkit-transition: 0.5s;
+    transition: 0.5s;
+  }
+
+  input:checked + .slider {
+    background-color: #2196f3;
+  }
+
+  input:focus + .slider {
+    box-shadow: 0 0 1px #2196f3;
+  }
+
+  input:checked + .slider:before {
+    -webkit-transform: translateX(18vw);
+    -ms-transform: translateX(18vw);
+    transform: translateX(6.5vw);
+  }
+
+  .slider.round:before {
+    border-radius: 50%;
+  }
+
+  #toggle-text {
+    position: absolute;
+    margin: 1.2vw 1.3vw;
+    font-size: 1.3vw;
+    color: rgba(255, 255, 255, 0.825);
   }
 }
